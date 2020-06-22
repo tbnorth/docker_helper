@@ -1,6 +1,12 @@
 # compact docker ps
 docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
 
+# remove non-running containers
+docker rm $(docker ps -a -q)
+
+# stop all containers
+docker stop $(docker ps -a -q)
+
 # list volumes for all containers
 docker ps --format '{{.Names}}' \
   | xargs -IF bash -c "echo F; docker inspect -f '{{ .Mounts }}' F | sed 's/}/}\n/g'"
