@@ -12,8 +12,9 @@ dv () {
   if [ "$1" ]; then
     docker volume inspect $1 | jq -r '.[] | .Mountpoint'
   else
+    # don't list anonymous, which have 64 char hash names
     docker volume ls | grep '\s\w\{,60\}$'
-    D=$(docker volume ls -f dangling=true | wc -l)
+    D=$(docker volume ls -q -f dangling=true | wc -l)
     echo docker volume ls -f dangling=true lists $D volumes
   fi
 }
