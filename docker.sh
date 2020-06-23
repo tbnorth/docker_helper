@@ -7,7 +7,10 @@ docker rm $(docker ps -a -q)
 # stop all containers
 docker stop $(docker ps -a -q)
 
-# command to get paths for named volumes
+# command to get paths for named volumes, with no parameter it lists
+# named volumes, with a volume name it lists the host path, so
+#   cp setup.dat $(dv myapp_data)/tmp/
+# for example would copy setup.dat into the volume 'myapp_data'
 dv () {
   if [ "$1" ]; then
     docker volume inspect $1 | jq -r '.[] | .Mountpoint'
