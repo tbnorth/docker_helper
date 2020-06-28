@@ -3,6 +3,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 
 
 def text_from_cmd(cmd):
@@ -19,6 +20,7 @@ def short_anon(text):
 
 def volume_sort(volume):
     return (
+        volume['Container'] if '--container' in sys.argv else None,
         volume['Type'] == 'bind',
         re.match("[a-z0-9]{64}", volume['Source']) is not None,
         volume['Source'],
@@ -77,16 +79,16 @@ for volume in dangling:
         inspect['Lost'] = True
     volumes.append(inspect)
 
-
+print("B:bind R:running D:dangling S:shared !:deleted")
 for volume in sorted(volumes, key=volume_sort):
     print(
         "{bind}{running}{dangling}{shared}{lost} "
         "{source} {name}{container}".format(
-            bind='B' if volume['Type'] == 'bind' else ' ',
-            running='R' if volume['Running'] else ' ',
-            dangling='D' if volume['Dangling'] else ' ',
-            lost='!' if volume['Lost'] else ' ',
-            shared='S' if volume['Shared'] else ' ',
+            bind='B' if volume['Type'] == 'bind' else '_',
+            running='R' if volume['Running'] else '_',
+            dangling='D' if volume['Dangling'] else '_',
+            lost='!' if volume['Lost'] else '_',
+            shared='S' if volume['Shared'] else '_',
             source=short_anon(volume['Source']),
             name=short_anon(f"as {volume['Name']} ")
             if volume.get('Name')
