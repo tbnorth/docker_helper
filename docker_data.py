@@ -27,7 +27,7 @@ def text_from_cmd(cmd):
 
 
 def short_anon(text):
-    return re.sub("([a-z0-9]{7})[a-z0-9]{57}", r"\1", text)
+    return re.sub("([a-z0-9]{7})[a-z0-9]{57}", r"\1*", text)
 
 
 def volume_sort(volume):
@@ -67,12 +67,16 @@ for container, mounted in mounts.items():
         mount['Running'] = container in running
         mount['Dangling'] = False
         mount['Shared'] = mount['Source'] in seen
+        seen.add(mount['Source'])
         try:
             os.stat(mount['Source'])
             mount['Lost'] = False
         except FileNotFoundError:
             mount['Lost'] = True
-        seen.add(mount['Source'])
+        if not mount['Lost']:
+            mount['Source'] = os.path.realpath(
+                os.path.abspath(mount['Source'])
+            )
         volumes.append(mount)
 
 for volume in dangling:
