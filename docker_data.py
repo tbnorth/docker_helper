@@ -81,20 +81,24 @@ for volume in dangling:
 
 print("B:bind R:running D:dangling S:shared !:deleted")
 for volume in sorted(volumes, key=volume_sort):
+    data = dict(
+        bind='B' if volume['Type'] == 'bind' else '_',
+        running='R' if volume['Running'] else '_',
+        dangling='D' if volume['Dangling'] else '_',
+        lost='!' if volume['Lost'] else '_',
+        shared='S' if volume['Shared'] else '_',
+        source=short_anon(volume['Source']),
+        name=short_anon(f"as {volume['Name']} ") if volume.get('Name') else '',
+        container=f"in {volume['Container']}"
+        if volume.get('Container')
+        else '',
+    )
+    if '--color' in sys.argv:
+        if data['name']:
+            data['name'] = f"as [33m{data['name'].split()[-1]}[0m "
+        if data['container']:
+            data['container'] = f"in [32m{data['container'].split()[-1]}[0m"
     print(
         "{bind}{running}{dangling}{shared}{lost} "
-        "{source} {name}{container}".format(
-            bind='B' if volume['Type'] == 'bind' else '_',
-            running='R' if volume['Running'] else '_',
-            dangling='D' if volume['Dangling'] else '_',
-            lost='!' if volume['Lost'] else '_',
-            shared='S' if volume['Shared'] else '_',
-            source=short_anon(volume['Source']),
-            name=short_anon(f"as {volume['Name']} ")
-            if volume.get('Name')
-            else '',
-            container=f"in {volume['Container']}"
-            if volume.get('Container')
-            else '',
-        )
+        "{source} {name}{container}".format_map(data)
     )
