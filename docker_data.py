@@ -61,13 +61,12 @@ mounts = {
 }
 volumes = []
 seen = set()
+shared = set()
 for container, mounted in mounts.items():
     for mount in mounted:
         mount['Container'] = container
         mount['Running'] = container in running
         mount['Dangling'] = False
-        mount['Shared'] = mount['Source'] in seen
-        seen.add(mount['Source'])
         try:
             os.stat(mount['Source'])
             mount['Lost'] = False
@@ -77,7 +76,13 @@ for container, mounted in mounts.items():
             mount['Source'] = os.path.realpath(
                 os.path.abspath(mount['Source'])
             )
+        if mount['Source'] in seen:
+            shared.add(mount['Source'])
+        seen.add(mount['Source'])
         volumes.append(mount)
+for volume in volumes:
+    volume['Shared'] = volume['Source'] in shared
+
 
 for volume in dangling:
     inspect = json.loads(text_from_cmd(f"docker volume inspect {volume}"))[0]
