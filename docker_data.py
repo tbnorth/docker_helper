@@ -17,6 +17,14 @@ def short_anon(text):
     return re.sub("([a-z0-9]{7})[a-z0-9]{57}", r"\1", text)
 
 
+def volume_sort(volume):
+    return (
+        volume['Type'] == 'bind',
+        re.match("[a-z0-9]{64}", volume['Source']) is not None,
+        volume['Source'],
+    )
+
+
 containers = text_from_cmd("docker ps -a --format {{.Names}}").split()
 running = text_from_cmd("docker ps --format {{.Names}}").split()
 dangling = text_from_cmd("docker volume ls -q -f dangling=true").split()
@@ -59,8 +67,9 @@ for volume in dangling:
     assert inspect['Source'] not in seen
     inspect['Container'] = None
     inspect['Running'] = False
-    inspect['Shared'] = False    
+    inspect['Shared'] = False
     inspect['Dangling'] = True
+    inspect['Type'] = 'volume'
     try:
         os.stat(inspect['Source'])
         inspect['Lost'] = False
@@ -69,9 +78,11 @@ for volume in dangling:
     volumes.append(inspect)
 
 
-for volume in sorted(volumes, key=lambda x: x['Source']):
+for volume in sorted(volumes, key=volume_sort):
     print(
-        "{running}{dangling}{shared}{lost} {source} {name}{container}".format(
+        "{bind}{running}{dangling}{shared}{lost} "
+        "{source} {name}{container}".format(
+            bind='B' if volume['Type'] == 'bind' else ' ',
             running='R' if volume['Running'] else ' ',
             dangling='D' if volume['Dangling'] else ' ',
             lost='!' if volume['Lost'] else ' ',
