@@ -52,6 +52,22 @@ for container, mounted in mounts.items():
             mount['Lost'] = True
         seen.add(mount['Source'])
         volumes.append(mount)
+
+for volume in dangling:
+    inspect = json.loads(text_from_cmd(f"docker volume inspect {volume}"))[0]
+    inspect['Source'] = inspect['Mountpoint']
+    assert inspect['Source'] not in seen
+    inspect['Container'] = None
+    inspect['Running'] = False
+    inspect['Dangling'] = True
+    try:
+        os.stat(inspect['Source'])
+        inspect['Lost'] = False
+    except FileNotFoundError:
+        inspect['Lost'] = True
+    volumes.append(inspect)
+
+
 for volume in sorted(volumes, key=lambda x: x['Source']):
     print(
         "{running}{dangling}{shared}{lost} {source} {name}{container}".format(
