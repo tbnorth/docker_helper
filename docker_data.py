@@ -1,4 +1,4 @@
-# https://gist.githubusercontent.com/tbnorth/fbe6b109aba0c90c0b2d18a6cedb4014/raw/all_docker_data.py
+# https://gist.githubusercontent.com/tbnorth/fbe6b109aba0c90c0b2d18a6cedb4014/raw/docker_data.py
 import json
 import os
 import re
@@ -59,6 +59,7 @@ for volume in dangling:
     assert inspect['Source'] not in seen
     inspect['Container'] = None
     inspect['Running'] = False
+    inspect['Shared'] = False    
     inspect['Dangling'] = True
     try:
         os.stat(inspect['Source'])
