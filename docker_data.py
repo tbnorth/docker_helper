@@ -1,4 +1,16 @@
-# https://gist.githubusercontent.com/tbnorth/fbe6b109aba0c90c0b2d18a6cedb4014/raw/docker_data.py
+"""
+docker_data.py - list *all* host paths used by Docker for storage
+
+Download (wget, curl) from:
+https://gist.githubusercontent.com/tbnorth/fbe6b109aba0c90c0b2d18a6cedb4014/raw/docker_data.py
+
+usage:
+    sudo python3 docker_data.py [--container] [--color]
+    --container: sort by container name instead of volume path
+    --color: highlight volume names / container names
+
+Terry N. Brown terrynbrown@gmail.com Sun 28 Jun 2020 11:31:40 AM CDT
+"""
 import json
 import os
 import re
