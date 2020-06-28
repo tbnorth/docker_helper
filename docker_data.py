@@ -20,7 +20,7 @@ def short_anon(text):
 
 def volume_sort(volume):
     return (
-        volume['Container'] if '--container' in sys.argv else None,
+        volume['Container'] if '--container' in sys.argv else '',
         volume['Type'] == 'bind',
         re.match("[a-z0-9]{64}", volume['Source']) is not None,
         volume['Source'],
