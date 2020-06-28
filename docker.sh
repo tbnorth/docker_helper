@@ -2,7 +2,7 @@
 docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
 
 # remove non-running containers
-docker rm $(docker ps -a -q)
+docker rm $(docker ps -a -q -f status=exited -f status=dead)
 
 # stop all containers
 docker stop $(docker ps -a -q)
