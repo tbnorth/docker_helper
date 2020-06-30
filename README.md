@@ -15,7 +15,9 @@ missing volumes (host directory deleted) are indicated by flags.
      of contents, etc.
 -->
 
-<!-- |insert,src=docker.sh,syntax=shell -->
+<!-- |insert,src=docker.sh,syntax=shell,addpath -->
+<div class='addpath'>(<a href="docker.sh"><i>docker.sh</i></a>)</div>
+
 ```shell
 # compact docker ps
 docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
