@@ -6,6 +6,7 @@ usage:
     sudo python3 docker_data.py [--container] [--color]
     --container: sort by container name instead of volume path
     --color: highlight volume names / container names
+    --did: docker in docker mode, used to run from docker-hub
 
 Terry N. Brown terrynbrown@gmail.com Sun 28 Jun 2020 11:31:40 AM CDT
 """
@@ -14,6 +15,8 @@ import os
 import re
 import subprocess
 import sys
+
+DID = '--did' in sys.argv
 
 
 def text_from_cmd(cmd):
@@ -66,7 +69,9 @@ for container, mounted in mounts.items():
         mount['Running'] = container in running
         mount['Dangling'] = False
         try:
-            os.stat(mount['Source'])
+            # check the path exists unless we're running in --did mode
+            if not DID:
+                os.stat(mount['Source'])
             mount['Lost'] = False
         except FileNotFoundError:
             mount['Lost'] = True
@@ -92,19 +97,24 @@ for volume in dangling:
     inspect['Dangling'] = True
     inspect['Type'] = 'volume'
     try:
-        os.stat(inspect['Source'])
+        # check the path exists unless we're running in --did mode
+        if not DID:
+            os.stat(inspect['Source'])
         inspect['Lost'] = False
     except FileNotFoundError:
         inspect['Lost'] = True
     volumes.append(inspect)
 
-print("B:bind R:running D:dangling S:shared !:deleted")
+docs = "B:bind R:running D:dangling S:shared"
+if not DID:
+    docs += " !:deleted"
+print(docs)
 for volume in sorted(volumes, key=volume_sort):
     data = dict(
         bind='B' if volume['Type'] == 'bind' else '_',
         running='R' if volume['Running'] else '_',
         dangling='D' if volume['Dangling'] else '_',
-        lost='!' if volume['Lost'] else '_',
+        lost='' if DID else '!' if volume['Lost'] else '_',
         shared='S' if volume['Shared'] else '_',
         source=short_anon(volume['Source']),
         name=short_anon(f"as {volume['Name']} ") if volume.get('Name') else '',

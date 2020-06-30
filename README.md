@@ -6,10 +6,16 @@ by path so you can see which parts of your host filesystem docker uses.
 Dangling volumes, container running / stopped status, volume sharing, and
 missing volumes (host directory deleted) are indicated by flags.
 
+```
+Usage:
+    sudo python3 docker_data.py [--container] [--color]
+    --container: sort by container name instead of volume path
+    --color: highlight volume names / container names
+```
 Example output:
 ```
   B:bind R:running D:dangling S:shared !:deleted
-1 __D__ /var/lib/docker/volumes/219c6de*/_data as 219c6de* 
+1 __D__ /var/lib/docker/volumes/219c6de*/_data as 219c6de*
 2 _____ /var/lib/docker/volumes/28551f3*/_data as 28551f3* in mp_mapserver_1
 3 ___S_ /var/lib/docker/volumes/mp_rwitmp/_data as mp_rwitmp in mp_mapserver_1
 4 ___S_ /var/lib/docker/volumes/mp_rwitmp/_data as mp_rwitmp in mp_mezserver_1
@@ -23,6 +29,17 @@ non-running container, (3,4) a named volume *S*hared by two (non-running)
 containers, (5) a named volume used by a running container, (6) a bind mount
 used by a running container, (7,8) a bind mount *S*hared by two (non-running)
 containers.
+
+On systems without Python 3.6+, you can run  `docker_data.py` with:
+```shell
+sudo docker run -it --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    tbnorth/docker_data
+```
+Deleted volumes won't be reported, because the container can't see the host
+file system.
+
+---
 
 [docker.sh](./docker.sh) is a listing of useful docker shell commands.
 
