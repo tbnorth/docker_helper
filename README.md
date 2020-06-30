@@ -6,6 +6,24 @@ by path so you can see which parts of your host filesystem docker uses.
 Dangling volumes, container running / stopped status, volume sharing, and
 missing volumes (host directory deleted) are indicated by flags.
 
+Example output:
+```
+  B:bind R:running D:dangling S:shared !:deleted
+1 __D__ /var/lib/docker/volumes/219c6de*/_data as 219c6de* 
+2 _____ /var/lib/docker/volumes/28551f3*/_data as 28551f3* in mp_mapserver_1
+3 ___S_ /var/lib/docker/volumes/mp_rwitmp/_data as mp_rwitmp in mp_mapserver_1
+4 ___S_ /var/lib/docker/volumes/mp_rwitmp/_data as mp_rwitmp in mp_mezserver_1
+5 _R___ /var/lib/docker/volumes/nrrickan_pg_data/_data as nrrickan_pg_data in nrrickan_db
+6 BR___ /mnt/data in docker_apache_1
+7 B__S_ /mnt/storage/usr1_scratch/tbrown/rwi.content/drive/otter in mp_mapserver_1
+8 B__S_ /mnt/storage/usr1_scratch/tbrown/rwi.content/drive/otter in mp_mezserver_1
+```
+(1) a dangling anonymous volume, (2) an anonymous volume referenced by a
+non-running container, (3,4) a named volume *S*hared by two (non-running)
+containers, (5) a named volume used by a running container, (6) a bind mount
+used by a running container, (7,8) a bind mount *S*hared by two (non-running)
+containers.
+
 [docker.sh](./docker.sh) is a listing of useful docker shell commands.
 
 <!-- |documentation -->
