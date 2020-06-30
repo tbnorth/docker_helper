@@ -1,8 +1,6 @@
 """
 docker_data.py - list *all* host paths used by Docker for storage
-
-Download (wget, curl) from:
-https://gist.githubusercontent.com/tbnorth/fbe6b109aba0c90c0b2d18a6cedb4014/raw/docker_data.py
+https://github.com/tbnorth/docker_helper
 
 usage:
     sudo python3 docker_data.py [--container] [--color]
